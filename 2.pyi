@@ -67,3 +67,8 @@ class czarny():
 
 #for i in plansza:
  #   print(i)
+
+
+
+
+print("Hello World!")
