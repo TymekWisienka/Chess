@@ -52,23 +52,3 @@ class czarny():
         #mozliwosci bicia
         pola_bicia_pionka = plansza[w-1][k-1], plansza[w-1][k+1]
 
-
-#def wierza():
-
-#def skoczek():
-
-#def goniec():
-
-#def krol():
-
-#def hetman():
-
-
-
-#for i in plansza:
- #   print(i)
-
-
-
-
-print("Hello World!")
