@@ -31,7 +31,7 @@ def przekladanie(wiersze1,kolumna1,wiersze2,kolumna2):
     print(kolumna1)
 przekladanie(wiersze1 = 0, kolumna1 = 1, wiersze2 = 2, kolumna2 = 2)
 
-class bialy():
+class bialy(): #Tymek
     def pionek_bialy(w, k):
         #mozliwosci ruchu
         if w == plansza[1]:
@@ -42,7 +42,7 @@ class bialy():
         pola_bicia_pionka = plansza[w+1][k-1], plansza[w+1][k+1]
 
 
-class czarny():
+class czarny(): #Karol
     def pionek_czarny(w, k):
         #mozliwosci ruchu
         if w == plansza[6]:
