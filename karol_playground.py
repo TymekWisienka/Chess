@@ -6,8 +6,11 @@ class ChessboardApp:
         self.rows = rows
         self.columns = columns
         self.selected_piece = None
-        self.board = None
+        self.board = [["" for _ in range(self.columns)] for _ in range(self.rows)]
+        self.labels = []
+        self.color = 'white'
         self.create_board()
+        self.initialize_pieces()
 
     def handle_click(self, row, col):
         if self.selected_piece is None:
@@ -16,20 +19,73 @@ class ChessboardApp:
             self.move_piece(row, col)
 
     def select_piece(self, row, col):
-        if self.board[row][col] != "":
+        piece = self.board[row][col]
+        if (piece.islower() and self.color == "white") or (piece.isupper() and self.color == "black"):
             self.selected_piece = (row, col)
             self.highlight_moves(row, col)
 
     def move_piece(self, row, col):
         if (row, col) in self.available_moves:
+            piece = self.board[self.selected_piece[0]][self.selected_piece[1]]
             self.board[self.selected_piece[0]][self.selected_piece[1]] = ""
-            self.board[row][col] = self.board[self.selected_piece[0]][self.selected_piece[1]]
+            self.board[row][col] = piece
             self.selected_piece = None
             self.clear_highlights()
-            self.redraw_board()
+            self.update_labels()
+            self.color = 'black' if self.color == 'white' else 'white'
 
     def highlight_moves(self, row, col):
-        self.available_moves = [(row+1, col), (row-1, col), (row, col+1), (row, col-1)]
+        self.available_moves = []
+        piece = self.board[row][col]
+        # Simplified movement rules
+        if piece.lower() == "p":  # Pawn
+            direction = 1 if piece.islower() else -1
+            if 0 <= row + direction < self.rows:
+                self.available_moves.append((row + direction, col))
+        elif piece.lower() == "r":  # Rook
+            for i in range(self.rows):
+                if i != row:
+                    self.available_moves.append((i, col))
+            for j in range(self.columns):
+                if j != col:
+                    self.available_moves.append((row, j))
+        elif piece.lower() == "n":  # Knight
+            moves = [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (1, -2), (-1, 2), (-1, -2)]
+            for dx, dy in moves:
+                if 0 <= row + dx < self.rows and 0 <= col + dy < self.columns:
+                    self.available_moves.append((row + dx, col + dy))
+        elif piece.lower() == "b":  # Bishop
+            for i in range(1, self.rows):
+                if 0 <= row + i < self.rows and 0 <= col + i < self.columns:
+                    self.available_moves.append((row + i, col + i))
+                if 0 <= row - i < self.rows and 0 <= col - i < self.columns:
+                    self.available_moves.append((row - i, col - i))
+                if 0 <= row + i < self.rows and 0 <= col - i < self.columns:
+                    self.available_moves.append((row + i, col - i))
+                if 0 <= row - i < self.rows and 0 <= col + i < self.columns:
+                    self.available_moves.append((row - i, col + i))
+        elif piece.lower() == "q":  # Queen
+            for i in range(self.rows):
+                if i != row:
+                    self.available_moves.append((i, col))
+            for j in range(self.columns):
+                if j != col:
+                    self.available_moves.append((row, j))
+            for i in range(1, self.rows):
+                if 0 <= row + i < self.rows and 0 <= col + i < self.columns:
+                    self.available_moves.append((row + i, col + i))
+                if 0 <= row - i < self.rows and 0 <= col - i < self.columns:
+                    self.available_moves.append((row - i, col - i))
+                if 0 <= row + i < self.rows and 0 <= col - i < self.columns:
+                    self.available_moves.append((row + i, col - i))
+                if 0 <= row - i < self.rows and 0 <= col + i < self.columns:
+                    self.available_moves.append((row - i, col + i))
+        elif piece.lower() == "k":  # King
+            moves = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+            for dx, dy in moves:
+                if 0 <= row + dx < self.rows and 0 <= col + dy < self.columns:
+                    self.available_moves.append((row + dx, col + dy))
+
         for move in self.available_moves:
             if 0 <= move[0] < self.rows and 0 <= move[1] < self.columns:
                 self.labels[move[0]][move[1]].configure(bg="yellow")
@@ -40,9 +96,6 @@ class ChessboardApp:
                 self.labels[row][col].configure(bg="white" if (row + col) % 2 == 0 else "light gray")
 
     def create_board(self):
-        self.board = [["" for _ in range(self.columns)] for _ in range(self.rows)]
-        self.labels = []
-
         for row in range(self.rows):
             current_row = []
             for col in range(self.columns):
@@ -53,17 +106,34 @@ class ChessboardApp:
                 current_row.append(label)
             self.labels.append(current_row)
 
-        # Inicjalizacja pionków na planszy
-        self.board[1][1] = "♙"
-        self.labels[1][1].configure(text="♙")
-        self.board[6][6] = "♟"
-        self.labels[6][6].configure(text="♟")
+    def initialize_pieces(self):
+        # Inicjalizacja pionków
+        for col in range(8):
+            self.board[1][col] = "♙"
+            self.board[6][col] = "♟"
+        # Inicjalizacja wież
+        self.board[0][0] = self.board[0][7] = "♖"
+        self.board[7][0] = self.board[7][7] = "♜"
+        # Inicjalizacja skoczków
+        self.board[0][1] = self.board[0][6] = "♘"
+        self.board[7][1] = self.board[7][6] = "♞"
+        # Inicjalizacja gońców
+        self.board[0][2] = self.board[0][5] = "♗"
+        self.board[7][2] = self.board[7][5] = "♝"
+        # Inicjalizacja królowej
+        self.board[0][3] = "♕"
+        self.board[7][3] = "♛"
+        # Inicjalizacja króla
+        self.board[0][4] = "♔"
+        self.board[7][4] = "♚"
 
-    def redraw_board(self):
+        self.update_labels()
+
+    def update_labels(self):
         for row in range(self.rows):
             for col in range(self.columns):
-                self.labels[row][col].destroy()
-        self.create_board()
+                piece = self.board[row][col]
+                self.labels[row][col].configure(text=piece)
 
 root = tk.Tk()
 root.title("Szachownica")
@@ -71,68 +141,3 @@ root.title("Szachownica")
 app = ChessboardApp(root, 8, 8)
 
 root.mainloop()
-
-'''
-import tkinter as tk
-
-def handle_click(row, col):
-    print(f"Kliknięto pole [{row}, {col}]")
-
-def create_board(root, rows, columns):
-    board = tk.Frame(root)
-    board.pack(fill=tk.BOTH, expand=True)
-
-    for row in range(rows):
-        for col in range(columns):
-            square_color = "white" if (row + col) % 2 == 0 else "light gray"
-            square = tk.Frame(board, bg=square_color, width=50, height=50)
-            square.grid(row=row, column=col, sticky="nsew")
-            square.bind("<Button-1>", lambda event, row=row, col=col: handle_click(row, col))
-            board.grid_rowconfigure(row, weight=1)
-            board.grid_columnconfigure(col, weight=1)
-
-            # Dodajemy figury na planszę
-            if row == 1:
-                label = tk.Label(square, text="♙", font=("Arial", 24), bg=square_color)
-                label.pack(expand=True)
-                label.bind("<Button-1>", lambda event, row=row, col=col: handle_click(row, col))
-                label.configure(bg=square_color)  # Ustawiamy przezroczyste tło dla pionka
-            elif row == 6:
-                label = tk.Label(square, text="♟", font=("Arial", 24), bg=square_color)
-                label.pack(expand=True)
-                label.bind("<Button-1>", lambda event, row=row, col=col: handle_click(row, col))
-                label.configure(bg=square_color)  # Ustawiamy przezroczyste tło dla pionka
-            elif row == 0 or row == 7:
-                if col == 0 or col == 7:
-                    label = tk.Label(square, text="♖", font=("Arial", 24), bg=square_color)
-                    label.pack(expand=True)
-                    label.bind("<Button-1>", lambda event, row=row, col=col: handle_click(row, col))
-                    label.configure(bg=square_color)  # Ustawiamy przezroczyste tło dla pionka
-                elif col == 1 or col == 6:
-                    label = tk.Label(square, text="♘", font=("Arial", 24), bg=square_color)
-                    label.pack(expand=True)
-                    label.bind("<Button-1>", lambda event, row=row, col=col: handle_click(row, col))
-                    label.configure(bg=square_color)  # Ustawiamy przezroczyste tło dla pionka
-                elif col == 2 or col == 5:
-                    label = tk.Label(square, text="♗", font=("Arial", 24), bg=square_color)
-                    label.pack(expand=True)
-                    label.bind("<Button-1>", lambda event, row=row, col=col: handle_click(row, col))
-                    label.configure(bg=square_color)  # Ustawiamy przezroczyste tło dla pionka
-                elif col == 3:
-                    label = tk.Label(square, text="♕", font=("Arial", 24), bg=square_color)
-                    label.pack(expand=True)
-                    label.bind("<Button-1>", lambda event, row=row, col=col: handle_click(row, col))
-                    label.configure(bg=square_color)  # Ustawiamy przezroczyste tło dla pionka
-                elif col == 4:
-                    label = tk.Label(square, text="♔", font=("Arial", 24), bg=square_color)
-                    label.pack(expand=True)
-                    label.bind("<Button-1>", lambda event, row=row, col=col: handle_click(row, col))
-                    label.configure(bg=square_color)  # Ustawiamy przezroczyste tło dla pionka
-
-root = tk.Tk()
-root.title("Szachownica")
-
-
-create_board(root,8,8)
-
-root.mainloop()'''
