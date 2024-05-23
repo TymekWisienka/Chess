@@ -20,7 +20,10 @@ class ChessboardApp:
 
     def select_piece(self, row, col):
         piece = self.board[row][col]
-        if (piece.islower() and self.color == "white") or (piece.isupper() and self.color == "black"):
+        print(piece)
+        print(self.color)
+        if (self.color == "white" and self.is_white(piece)) or (self.color == "black" and self.is_black(piece)):
+            print('self.color')
             self.selected_piece = (row, col)
             self.highlight_moves(row, col)
 
@@ -135,6 +138,10 @@ class ChessboardApp:
                 piece = self.board[row][col]
                 self.labels[row][col].configure(text=piece)
 
+    def is_white(self, x):
+        return x in {"♗", "♙", "♖", "♘", "♔", "♕"}
+    def is_black(self, x):
+        return x in {"♟", "♜", "♞", "♝", "♛", "♚"}
 root = tk.Tk()
 root.title("Szachownica")
 
