@@ -23,7 +23,7 @@ class ChessboardApp:
         print(piece)
         print(self.color)
         if (self.color == "white" and self.is_white(piece)) or (self.color == "black" and self.is_black(piece)):
-            print('self.color')
+            print('wejście w if')
             self.selected_piece = (row, col)
             self.highlight_moves(row, col)
 
@@ -38,10 +38,13 @@ class ChessboardApp:
             self.color = 'black' if self.color == 'white' else 'white'
 
     def highlight_moves(self, row, col):
+        print(row)
+        print(col)
         self.available_moves = []
         piece = self.board[row][col]
         # Simplified movement rules
-        if piece.lower() == "p":  # Pawn
+        print(piece)
+        if piece in {"♙","♟"}:  # Pawn
             direction = 1 if piece.islower() else -1
             if 0 <= row + direction < self.rows:
                 self.available_moves.append((row + direction, col))
