@@ -38,8 +38,6 @@ class ChessboardApp:
             self.color = 'black' if self.color == 'white' else 'white'
 
     def highlight_moves(self, row, col):
-        print(row)
-        print(col)
         self.available_moves = []
         piece = self.board[row][col]
         # Simplified movement rules
