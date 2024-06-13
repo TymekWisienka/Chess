@@ -43,22 +43,24 @@ class ChessboardApp:
         # Simplified movement rules
         print(piece)
         if piece in {"♙","♟"}:  # Pawn
-            direction = 1 if piece.islower() else -1
+            if piece == piece[0]:
+                direction = 1
+            else: -1
             if 0 <= row + direction < self.rows:
                 self.available_moves.append((row + direction, col))
-        elif piece.lower() == "r":  # Rook
+        elif piece in {"♖","♜"}:  # Rook
             for i in range(self.rows):
                 if i != row:
                     self.available_moves.append((i, col))
             for j in range(self.columns):
                 if j != col:
                     self.available_moves.append((row, j))
-        elif piece.lower() == "n":  # Knight
+        elif piece in {"♘","♞"}:  # Knight
             moves = [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (1, -2), (-1, 2), (-1, -2)]
             for dx, dy in moves:
                 if 0 <= row + dx < self.rows and 0 <= col + dy < self.columns:
                     self.available_moves.append((row + dx, col + dy))
-        elif piece.lower() == "b":  # Bishop
+        elif piece in {"♗","♝"}:  # Bishop
             for i in range(1, self.rows):
                 if 0 <= row + i < self.rows and 0 <= col + i < self.columns:
                     self.available_moves.append((row + i, col + i))
@@ -68,7 +70,7 @@ class ChessboardApp:
                     self.available_moves.append((row + i, col - i))
                 if 0 <= row - i < self.rows and 0 <= col + i < self.columns:
                     self.available_moves.append((row - i, col + i))
-        elif piece.lower() == "q":  # Queen
+        elif piece in {"♕","♛"}:  # Queen
             for i in range(self.rows):
                 if i != row:
                     self.available_moves.append((i, col))
@@ -84,7 +86,7 @@ class ChessboardApp:
                     self.available_moves.append((row + i, col - i))
                 if 0 <= row - i < self.rows and 0 <= col + i < self.columns:
                     self.available_moves.append((row - i, col + i))
-        elif piece.lower() == "k":  # King
+        elif piece in {"♔","♚"}:  # King
             moves = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
             for dx, dy in moves:
                 if 0 <= row + dx < self.rows and 0 <= col + dy < self.columns:
